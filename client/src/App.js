@@ -19,13 +19,28 @@ function App() {
       if(provider){
         await provider.send("eth_requestAccounts",[]);
         const signer = provider.getSigner();
-        
+        const address = await signer.getAddress();
+        setAccount(address);
+        let contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+
+        const contract = new ethers.Contract(
+          contractAddress,Upload.abi,signer
+        );
+        setContract(contract);
+        setProvider(provider);
+      }else{
+        console.error("Metamask Error");
       }
-    }
-  })
+    };
+    provider && loadProvider();
+  }, []);
   return (
     <div className="App">
-      
+      <h1>Decentralized storage</h1>
+      <div class = "bg"></div>
+      <div class = "bg bg2"></div>
+      <div class = "bg bg3"></div>
+      <p style = {{ color: "white"}}>Account : {account ? account: "Not connected"}</p>
     </div>
   );
 }
