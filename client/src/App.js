@@ -17,6 +17,15 @@ function App() {
 
     const loadProvider = async() =>{
       if(provider){
+
+        window.ethereum.on("chainChanged", () => {
+          window.location.reload();
+        });
+
+        window.ethereum.on("accountsChanged", () => {
+          window.location.reload();
+        });
+
         await provider.send("eth_requestAccounts",[]);
         const signer = provider.getSigner();
         const address = await signer.getAddress();
@@ -36,7 +45,7 @@ function App() {
   }, []);
   return (
     <div className="App">
-      <h1>Decentralized storage</h1>
+      <h1 style = {{color:"white"}}>Decentralized storage</h1>
       <div class = "bg"></div>
       <div class = "bg bg2"></div>
       <div class = "bg bg3"></div>
