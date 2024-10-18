@@ -1,44 +1,46 @@
 import { useState } from "react";
 import "./Display.css";
-const Display = ({ contract, account }) => {
-  const [data, setData] = useState("");
-  const getdata = async () => {
-    let dataArray;
-    const Otheraddress = document.querySelector(".address").value;
-    try {
-      if (Otheraddress) {
-        dataArray = await contract.display(Otheraddress);
-        console.log(dataArray);
-      } else {
-        dataArray = await contract.display(account);
-      }
-    } catch (e) {
-      alert("You don't have access");
-    }
-    const isEmpty = Object.keys(dataArray).length === 0;
 
-    if (!isEmpty) {
-      const str = dataArray.toString();
-      const str_array = str.split(",");
-      // console.log(str);
-      // console.log(str_array);
-      const images = str_array.map((item, i) => {
-        return (
-          <a href={item} key={i} target="_blank">
+const Display = ({ contract, account }) => {
+  const [data, setData] = useState([]);
+  const [inputAddress, setInputAddress] = useState(""); // State to manage user input address
+  const [loading, setLoading] = useState(false); // State to manage loading status
+
+  const getData = async () => {
+    setLoading(true); // Set loading to true while fetching data
+    setData([]); // Clear previous data
+
+    let dataArray;
+    const addressToCheck = inputAddress || account; // Use input address or default to account
+
+    try {
+      dataArray = await contract.display(addressToCheck);
+      console.log(dataArray);
+      
+      const isEmpty = !dataArray || dataArray.length === 0;
+
+      if (!isEmpty) {
+        const images = dataArray.map((item, i) => (
+          <a href={item} key={i} target="_blank" rel="noopener noreferrer">
             <img
-              key={i}
               src={`https://gateway.pinata.cloud/ipfs/${item.substring(6)}`}
-              alt="new"
+              alt="Uploaded content"
               className="image-list"
-            ></img>
+            />
           </a>
-        );
-      });
-      setData(images);
-    } else {
-      alert("No image to display");
+        ));
+        setData(images);
+      } else {
+        alert("No images to display.");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      alert("You don't have access or an error occurred while fetching data.");
+    } finally {
+      setLoading(false); // Set loading to false after data fetching completes
     }
   };
+
   return (
     <>
       <div className="image-list">{data}</div>
@@ -46,11 +48,14 @@ const Display = ({ contract, account }) => {
         type="text"
         placeholder="Enter Address"
         className="address"
-      ></input>
-      <button className="center button" onClick={getdata}>
-        Get Data
+        value={inputAddress}
+        onChange={(e) => setInputAddress(e.target.value)} // Update state with user input
+      />
+      <button className="center button" onClick={getData} disabled={loading}>
+        {loading ? "Loading..." : "Get Data"}
       </button>
     </>
   );
 };
+
 export default Display;
