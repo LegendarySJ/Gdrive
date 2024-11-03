@@ -3,58 +3,67 @@ import "./Display.css";
 
 const Display = ({ contract, account }) => {
   const [data, setData] = useState([]);
-  const [inputAddress, setInputAddress] = useState(""); // State to manage user input address
-  const [loading, setLoading] = useState(false); // State to manage loading status
+  const [inputAddress, setInputAddress] = useState("");
+  const [loading, setLoading] = useState(false); // Add loading state
 
   const getData = async () => {
-    setLoading(true); // Set loading to true while fetching data
-    setData([]); // Clear previous data
+    setLoading(true); // Set loading to true when fetching data
+    setData([]);
 
-    let dataArray;
-    const addressToCheck = inputAddress || account; // Use input address or default to account
+    const addressToCheck = inputAddress || account;
 
     try {
-      dataArray = await contract.display(addressToCheck);
-      console.log(dataArray);
-      
-      const isEmpty = !dataArray || dataArray.length === 0;
+      const dataArray = await contract.display(addressToCheck);
 
-      if (!isEmpty) {
+      if (dataArray && dataArray.length > 0) {
         const images = dataArray.map((item, i) => (
-          <a href={item} key={i} target="_blank" rel="noopener noreferrer">
+          <a
+            href={item}
+            key={i}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="image-container"
+          >
             <img
               src={`https://gateway.pinata.cloud/ipfs/${item.substring(6)}`}
-              alt="Uploaded content"
+              alt={`Image ${i}`}
               className="image-list"
+              loading="lazy"
             />
           </a>
         ));
         setData(images);
       } else {
-        alert("No images to display.");
+        setData(<p className="no-images-message">No images found for this address.</p>);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-      alert("You don't have access or an error occurred while fetching data.");
+      setData(<p className="error-message">Error fetching data. Please check the address and try again.</p>);
     } finally {
-      setLoading(false); // Set loading to false after data fetching completes
+      setLoading(false); // Set loading to false after fetching completes
     }
   };
 
   return (
-    <>
-      <div className="image-list">{data}</div>
-      <input
-        type="text"
-        placeholder="Enter Address"
-        className="address"
-        value={inputAddress}
-        onChange={(e) => setInputAddress(e.target.value)} // Update state with user input
-      />
-      <button className="center button" onClick={getData} disabled={loading}>
-        {loading ? "Loading..." : "Get Data"}
-      </button>
-    </>
+    <div className="display-container">
+      <div className="input-area">
+        <input
+          type="text"
+          placeholder="Enter Address"
+          className="address-input"
+          value={inputAddress}
+          onChange={(e) => setInputAddress(e.target.value)}
+        />
+        <button
+          className="get-data-button"
+          onClick={getData}
+          disabled={loading} // Disable button while loading
+        >
+          {loading ? "Loading..." : "Get Data"} {/* Display loading text */}
+        </button>
+      </div>
+      <div className="image-list-container">{data}</div>
+    </div>
   );
 };
 
