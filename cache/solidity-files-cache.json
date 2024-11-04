@@ -35,6 +35,41 @@
       "artifacts": [
         "upload"
       ]
+    },
+    "/home/swarnadip/Desktop/New Folder/Blockchain/contracts/Upload.sol": {
+      "lastModificationDate": 1730749742812,
+      "contentHash": "bdfe91ab8a0b670c30f0f9d5ef57ef83",
+      "sourceName": "contracts/Upload.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.7.0 <0.9.0"
+      ],
+      "artifacts": [
+        "upload"
+      ]
     }
   }
 }
