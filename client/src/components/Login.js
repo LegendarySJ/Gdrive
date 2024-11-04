@@ -14,7 +14,7 @@ function Login({ onLogin }) {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:5000/login', {  // Or your backend URL
+            const response = await fetch('http://localhost:5000/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),
@@ -25,27 +25,17 @@ function Login({ onLogin }) {
                 const data = await response.json();
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('accounts', JSON.stringify(data.accounts));
-                onLogin(data.token, data.accounts); // Call the parent function to handle login state
-
-                // Request account access and set the MetaMask account
-                if (typeof window.ethereum !== 'undefined') {
-                    await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-                    
-                    // Handle account information
-                    accounts.forEach((account) => {
-                        console.log(`Account Address: ${account}`);
-                        // Store account address if needed
-                    });
-
-                } else {
-                    alert("MetaMask is not installed. Please install it to use this feature.");
-                }
-
-                navigate('/'); // Redirect to the main page or another protected route
+                
+                // Call the parent function with login data
+                onLogin({
+                    token: data.token,
+                    accounts: data.accounts
+                });
+                
+                navigate('/');
             } else {
                 const errorData = await response.json();
-                setError(errorData.errors?.[0]?.msg || errorData.error || "Login failed."); // Handle validation errors too
+                setError(errorData.errors?.[0]?.msg || errorData.error || "Login failed.");
             }
         } catch (error) {
             console.error("Login error:", error);

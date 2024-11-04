@@ -1,13 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { ethers } from "ethers";
 import "./Display.css";
 
-const Display = ({ contract, account }) => {
+const Display = ({ contract, account, provider, selectedAccount }) => {
   const [data, setData] = useState([]);
   const [inputAddress, setInputAddress] = useState("");
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
+  const [balance, setBalance] = useState("0");
+
+  useEffect(() => {
+    const updateBalance = async () => {
+      if (account && provider) {
+        try {
+          const balance = await provider.getBalance(account);
+          setBalance(ethers.utils.formatEther(balance));
+        } catch (error) {
+          console.error("Error fetching balance:", error);
+        }
+      }
+    };
+
+    updateBalance();
+  }, [account, provider]);
 
   const getData = async () => {
-    setLoading(true); // Set loading to true when fetching data
+    if (!contract || !account) {
+      console.error("Contract or account not initialized");
+      return;
+    }
+
+    setLoading(true);
     setData([]);
 
     const addressToCheck = inputAddress || account;
@@ -26,7 +48,7 @@ const Display = ({ contract, account }) => {
           >
             <img
               src={`https://gateway.pinata.cloud/ipfs/${item.substring(6)}`}
-              alt={`Image ${i}`}
+              alt={`Item ${i + 1}`}
               className="image-list"
               loading="lazy"
             />
@@ -40,12 +62,20 @@ const Display = ({ contract, account }) => {
       console.error("Error fetching data:", error);
       setData(<p className="error-message">Error fetching data. Please check the address and try again.</p>);
     } finally {
-      setLoading(false); // Set loading to false after fetching completes
+      setLoading(false);
     }
   };
 
   return (
     <div className="display-container">
+      <div className="account-header">
+        <div className="account-info">
+          <p>Current Account: {selectedAccount?.account_name}</p>
+          <p>Address: {account}</p>
+          <p>Gas Balance: {balance} ETH</p>
+        </div>
+      </div>
+      
       <div className="input-area">
         <input
           type="text"
@@ -57,9 +87,9 @@ const Display = ({ contract, account }) => {
         <button
           className="get-data-button"
           onClick={getData}
-          disabled={loading} // Disable button while loading
+          disabled={loading || !contract}
         >
-          {loading ? "Loading..." : "Get Data"} {/* Display loading text */}
+          {loading ? "Loading..." : "Get Data"}
         </button>
       </div>
       <div className="image-list-container">{data}</div>
