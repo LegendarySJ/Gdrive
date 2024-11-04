@@ -158,7 +158,7 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <h1 style={{ color: "black" }}>Gdrive 3.0</h1>
+        <h1 style={{ color: "black" }}>Blockchain based Cloud Storage</h1>
 
         {errorMessage && (
           <div className="error-banner">
