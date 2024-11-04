@@ -124,9 +124,16 @@ h1 {
   margin-bottom: 30px;
 }
 
+.black-line {
+  border: none;
+  border-top: 2px solid black; /* Adjust thickness here */
+  margin: 20px 0; /* Add vertical spacing if needed */
+  width: 100%; /* Make it full width */
+}
+
 h3,
 p {
-  font-family: "Open Sans", sans-serif;
+  font-family: "Dancing Script", cursive;
   margin-bottom: 30px;
 }
 .share {
